@@ -1,0 +1,64 @@
+version: '2'
+
+services:
+  zookeeper:
+    image: $zookeeperImage
+    restart: always
+  kafka:
+    image: $kafkaImage
+    restart: always
+    links:
+      - zookeeper:zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_HOST_NAME: "kafka"
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_LOG_CLEANER_ENABLE: "false"
+      KAFKA_LOG_RETENTION_HOURS: 2147483647
+  postgres:
+    image: $postgresImage
+    restart: always
+  global-db:
+    image: $globaldbImage
+    links:
+      - postgres
+    environment:
+      pghost : postgres
+  bloc:
+    image: $blocImage
+    restart: always
+    ports:
+      - 8000:8000
+    environment:
+      fqdn: strato:3000
+
+  explorer:
+    image: $explorerImage
+    ports:
+      - 9000:9000
+    depends_on:
+      - bloc
+    restart: always
+
+  strato:
+    image: $stratoImage
+    depends_on:
+      - kafka
+      - postgres
+    restart: always
+    environment:
+      serveBlocks: "false"
+      fqdn : "${fqdn}"
+      instantMining: "true"
+
+    ports:
+      - 3000:3000
+  nginx:
+    image: $nginxImage
+    ports:
+      - "80:80"
+    depends_on:
+      - explorer
+      - bloc
+      - strato
