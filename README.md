@@ -2,6 +2,8 @@
 
 Deployment Scripts and Walkthroughs for BlockApps Strato
 --------------------------------------------------------
+[![BlockApps logo](http://blockapps.net/img/logo_cropped.png)](http://blockapps.net)
+
 
 BlockApps Strato can be easily deployed on a single machine, on private clouds, 
 and on hybrid on public clouds. Notably, BlockApps Strato was the first Blockchain
